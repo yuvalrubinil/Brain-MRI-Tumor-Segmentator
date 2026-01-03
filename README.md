@@ -29,10 +29,12 @@ All images and masks are resized to a fixed resolution of 256x256 pixels to ensu
 ### Training and Evaluation
 We did not immediately train on the full dataset. Instead, we began with a small pilot subset of 20 patients to observe the model’s behavior. During this phase, we focused on tuning two main axes: the loss function and the learning rate.
 #### Loss Function:
-Initially, the loss was set to be: $\mathcal{L} = 0.5 \cdot \mathcal{dice} + 0.5 \cdot \mathcal{BCE}$. however, this setup performed poorly, the model consistently produced noisy, fragmented binary masks that looked like scattered “islands” rather than coherent tumor regions. To fix this, we shifted the focus and gave much more weight to the Dice score:
+Initially, the loss was set to be: $\mathcal{L} = 0.5 \cdot \mathcal{dice} + 0.5 \cdot \mathcal{BCE}$. however, this setup performed poorly, the model consistently produced noisy, fragmented binary masks that looked like scattered "islands" rather than coherent tumor regions. To fix this, we shifted the focus and gave much more weight to the Dice score:
+
 $$
-\mathcal{L} = 0.8 \cdot \mathcal{dice} + 0.2 \cdot \mathcal{BCE}
+\mathcal{L} = 0.8 \cdot \mathcal{L}_{Dice} + 0.2 \cdot \mathcal{L}_{BCE}
 $$
+
 By prioritizing the Dice loss, we forced the model to care way more about the actual overlap of the tumor mask. The results improved almost immediately, producing much sharper and more accurate predictions.
 
 #### Learning Rate:
