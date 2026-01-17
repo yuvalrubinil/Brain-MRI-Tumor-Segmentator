@@ -78,11 +78,12 @@ graph LR
     linkStyle 8,9,10 stroke:#689F38,stroke-width:3px
     linkStyle 11 stroke:#F9A825,stroke-width:3px
 ```
-- <span>*Concatenate*</span> - white dashed arrow
-- <span style="color:#8D6E63">*Convolution (no pooling)*</span>
-- <span style="color:#795548">*Convolution*</span>
-- <span style="color:#F9A825">*Channel Projection*</span>
-- <span style="color:#689F38">*Transposed Convolution*</span>
+- <span style="color:#FFFFFF"><em>Concatenate</em></span> — white dashed arrow
+- <span style="color:#8D6E63"><em>Convolution (no pooling)</em></span>
+- <span style="color:#795548"><em>Convolution</em></span>
+- <span style="color:#F9A825"><em>Channel Projection</em></span>
+- <span style="color:#689F38"><em>Transposed Convolution</em></span>
+
 
 
 #### Activations
