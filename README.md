@@ -6,13 +6,13 @@ This project focuses on automated tumor segmentation in MRI brain scans using de
 ### Architecture
 The project applies a hybrid U-Net and Transformer architecture to combine local feature extraction with global contextual understanding. The model follows a U-Net structure with a convolutional encoder, a Transformer-based bottleneck, and a decoder for precise segmentation.
 
-#### Encoder (CNN): 
+#### Encoder: 
 Uses standard convolutional layers to extract local features (textures, edges) and progressively reduce spatial resolution.
 
 #### Transformer Bottleneck:
 Replaces the traditional convolutional bottleneck. It flattens feature maps into patches and applies self attention. This allows the model to capture global context and understand the relationship between distant pixels, which is essential for identifying the full extent of larger tumors.
 
-#### Decoder (Transposed Conv):
+#### Decoder:
 Upsamples the features using `nn.ConvTranspose2d` to restore spatial resolution. It uses residual connections to bring high-resolution local details from the encoder back into the mask generation process.
 
 ```mermaid 
@@ -78,11 +78,11 @@ graph LR
     linkStyle 8,9,10 stroke:#689F38,stroke-width:3px
     linkStyle 11 stroke:#F9A825,stroke-width:3px
 ```
-- <span style="color:#FFFFFF"><em>Concatenate</em></span> — white dashed arrow
-- <span style="color:#8D6E63"><em>Convolution (no pooling)</em></span>
-- <span style="color:#795548"><em>Convolution</em></span>
-- <span style="color:#F9A825"><em>Channel Projection</em></span>
-- <span style="color:#689F38"><em>Transposed Convolution</em></span>
+- ![#FFFFFF](https://placehold.co/15x15/FFFFFF/FFFFFF.png) *Concatenate* - white dashed arrow
+- ![#8D6E63](https://placehold.co/15x15/8D6E63/8D6E63.png) *Convolution (no pooling)*
+- ![#795548](https://placehold.co/15x15/795548/795548.png) *Convolution*
+- ![#F9A825](https://placehold.co/15x15/F9A825/F9A825.png) *Channel Projection*
+- ![#689F38](https://placehold.co/15x15/689F38/689F38.png) *Transposed Convolution*
 
 
 
