@@ -1,4 +1,4 @@
-# TransUNet - Brain MRI Tumor Segmentator
+# Brain MRI Tumor Segmentator
 ![](models/brain_tumor_model_v1/samples/sample3.png)
 
 This project focuses on automated tumor segmentation in MRI brain scans using deep learning. Manual segmentation is time consuming and prone to variability, motivating the need for reliable automated solutions. The project aims to improve consistency and efficiency in medical image analysis, by reducing doctors workload and provide assistance in tumor detection.
@@ -15,7 +15,75 @@ Replaces the traditional convolutional bottleneck. It flattens feature maps into
 #### Decoder (Transposed Conv):
 Upsamples the features using `nn.ConvTranspose2d` to restore spatial resolution. It uses residual connections to bring high-resolution local details from the encoder back into the mask generation process.
 
-![](architecture/architechture_white.png)
+```mermaid 
+graph LR
+
+    %% Skip Connections
+    E1 -.-> U3
+    E2 -.-> U2
+    E3 -.-> U1
+
+    I["MRI - grayscale<br/>(1, 256, 256)"]
+    I --> E1
+
+    %% Encoder
+    subgraph Encoder ["Encoder"]
+        E1["Enc1<br/>(64, 256, 256)"]
+        E2["Enc2<br/>(128, 128, 128)"]
+        E3["Enc3<br/>(256, 64, 64)"]
+        E4["Enc4<br/>(512, 32, 32)"]
+
+        E1 --> E2
+        E2 --> E3
+        E3 --> E4
+    end
+
+    %% Bottleneck
+    E4 --> T["Transformer Encoder<br/>4 layers, 8 heads<br/>(512, 32, 32)"]
+    T --> U1
+
+    %% Decoder
+    subgraph Decoder ["Decoder"]
+        U1["Up1<br/>(256, 64, 64)"]
+        U2["Up2<br/>(128, 128, 128)"]
+        U3["Up3<br/>(64, 256, 256)"]
+
+        U1 --> U2
+        U2 --> U3
+    end
+
+    U3 --> O
+    O["Final Mask<br/>(1, 256, 256)"]
+
+
+    %% STYLING 
+    style Encoder fill:transparent,stroke:#888,stroke-dasharray:0 50
+    style Decoder fill:transparent,stroke:#888,stroke-dasharray:0 50
+
+    classDef input fill:#424242,stroke:#424242,color:#FAFAFA
+    classDef encoder fill:#1976D2,stroke:#1976D2,color:#FAFAFA
+    classDef bottleneck fill:#7E57C2,stroke:#7E57C2,color:#FAFAFA
+    classDef decoder fill:#B71C1C,stroke:#B71C1C,color:#FAFAFA
+    classDef output fill:#212121,stroke:#616161,color:#FAFAFA
+
+    class I input
+    class E1,E2,E3,E4 encoder
+    class T bottleneck
+    class U1,U2,U3 decoder
+    class O output
+
+    linkStyle 3 stroke:#8D6E63,stroke-width:3px
+    linkStyle 4,5,6 stroke:#795548,stroke-width:3px
+    linkStyle 7 stroke-width:2px
+    linkStyle 8,9,10 stroke:#689F38,stroke-width:3px
+    linkStyle 11 stroke:#F9A825,stroke-width:3px
+```
+- <span>*Concatenate*</span> - white dashed arrow
+- <span style="color:#8D6E63">*Convolution (no pooling)*</span>
+- <span style="color:#795548">*Convolution*</span>
+- <span style="color:#F9A825">*Channel Projection*</span>
+- <span style="color:#689F38">*Transposed Convolution*</span>
+
 
 #### Activations
 - **ReLU:** used in all convolutional blocks for non-linearity.
@@ -23,8 +91,8 @@ Upsamples the features using `nn.ConvTranspose2d` to restore spatial resolution.
 - **Sigmoid:** applied to the final output to convert the model’s predictions into a binary tumor segmentation mask.
 
 ### Data Collection/Preparation
-The dataset contains MRI scans from 110 patients, with each patient having several MRI scans. The MRI images are paired with their corresponding ground-truth images: we created an array called samples, in which each element is stored as a pair [MRI scan, ground truth]. Only image-mask pairs for which both files exist, are included.
-All images and masks are resized to a fixed resolution of 256x256 pixels to ensure consistent input dimensions for the neural network. Masks are resized using nearest-neighbor interpolation to preserve discrete label values and avoid the introduction of fake pixels that did not exist in the original image, created by the resizing process. Both images and masks are converted to grayscale, because there is no physical meaning for the color channel on this task: we want to get rid of redundant information to get better training time and less memory usage.
+We used the custom PyTorch dataset class - the MRIDataset - to load and preprocess MRI images together with their ground-truth images. To do it, we created an array called ‘samples’ and the pairs in it are stored as [MRI Scan, Ground Truth]. Only image–mask pairs for which both files exist, are included. 
+All images and masks are resized to a fixed resolution of 256x256 pixels to ensure consistent input dimensions for the neural network. MRI images are resized and converted to tensors, while masks are resized using nearest-neighbor interpolation to preserve discrete label values and avoid the introduction of fake pixels that did not exist in the original image, created by the resizing process. Both images and masks are converted to grayscale, because there is no physical meaning for the color channel on this task. We want to get rid of redundant information to get better training time and less memory usage.
 
 ### Training and Evaluation
 We did not immediately train on the full dataset. Instead, we began with a small pilot subset of 20 patients to observe the model’s behavior. During this phase, we focused on tuning two main axes: the loss function and the learning rate.
