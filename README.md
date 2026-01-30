@@ -91,18 +91,23 @@ graph LR
 - ![#303F9F](https://placehold.co/15x15/303F9F/303F9F.png) *Sigmoid Threshold*
 
 
-- architecture code: [`src/tumor_detector.py`](src/tumor_detector.py)
+Architecture code: [`src/tumor_detector.py`](src/tumor_detector.py)
 
 #### Activations
 - **ReLU:** used in all convolutional blocks for non-linearity.
 - **GELU:** used within the Transformer encoder to provide smooth non-linear activation suited for attention.
 - **Sigmoid:** applied to the final logits to map raw values into a $[0, 1]$ probability range. These values are then binarized via thresholding to produce the final discrete tumor segmentation mask.
 
-### Data Collection/Preparation
-We used the custom PyTorch dataset class - the MRIDataset - to load and preprocess MRI images together with their ground-truth images. To do it, we created an array called ‘samples’ and the pairs in it are stored as [MRI Scan, Ground Truth]. Only image–mask pairs for which both files exist, are included. 
-All images and masks are resized to a fixed resolution of 256x256 pixels to ensure consistent input dimensions for the neural network. MRI images are resized and converted to tensors, while masks are resized using nearest-neighbor interpolation to preserve discrete label values and avoid the introduction of fake pixels that did not exist in the original image, created by the resizing process. Both images and masks are converted to grayscale, because there is no physical meaning for the color channel on this task. We want to get rid of redundant information to get better training time and less memory usage.
+### Data Collection & Preparation
 
-- dataset code: [`src/dataset.py`](src/dataset.py)
+We implemented a custom PyTorch dataset class, **`MRIDataset`**, to load and preprocess MRI scans along with their corresponding ground truth masks. The dataset maintains a list of paired samples in the form **[MRI scan, GT mask]**, ensuring aligned input–target loading during training.
+
+All images are resized to a fixed resolution of **256×256** pixels to ensure consistent input dimensions for the network. MRI images are resized and converted to tensors, while ground truth masks are resized using **`InterpolationMode.NEAREST`** to preserve the creation of artificial pixels during the resizing process.
+
+Both images and masks are converted to **grayscale**, as color channels carry no physical meaning for this task. Removing redundant color information reduces memory usage and improves training efficiency without affecting segmentation performance.
+
+
+Dataset code: [`src/dataset.py`](src/dataset.py)
 
 ### Training and Evaluation
 We did not immediately train on the full dataset. Instead, we began with a small pilot subset of 20 patients to observe the model’s behavior. During this phase, we focused on tuning two main axes: the loss function and the learning rate.
@@ -116,10 +121,11 @@ $$
 yielded the most stable results. By balance, we achieved good overlap and good pixel confidence.
 
 #### Learning Rate:
-Initially, we trained the model using a fixed learning rate. We then used a learning rate scheduler (ReduceLROnPlateau) to monitor the average validation Dice score, automatically reducing the learning rate when performance plateaued, which enabled finer weight updates and better convergence.
+Initially, the model was trained with a fixed learning rate. To improve convergence, we then employed a **`ReduceLROnPlateau`** scheduler, which monitors the average validation Dice score and automatically reduces the learning rate when performance plateaus, enabling finer weight updates.
+
 
 ![](models/brain_tumor_model_v6/figures/training_curve.png)
-- training code: [`models/brain_tumor_model_v6/notebooks/training.ipynb`](models/brain_tumor_model_v6/notebooks/training.ipynb)
+Training code: [`models/brain_tumor_model_v6/notebooks/training.ipynb`](models/brain_tumor_model_v6/notebooks/training.ipynb)
 
 ### Analysis
 #### Computational Challenge
@@ -141,7 +147,10 @@ We successfully trained a robust model (**`brain_tumor_model_v6`**) that achieve
 | F1-score   | 0.8797                     |
 | TP / TN / FP / FN | 0.3 / 0.62 / 0.055 / 0.025 |
 
+Metrics code: [`src/metrics.py`](src/metrics.py)
+
+
 - View sample predictions: [`models/brain_tumor_model_v6/figures/samples.png`](models/brain_tumor_model_v6/figures/samples.png)  
 - Run a full evaluation: [`models/brain_tumor_model_v6/notebooks/evaluation.ipynb`](models/brain_tumor_model_v6/notebooks/evaluation.ipynb)
-- Metrics code: [`src/metrics.py`](src/metrics.py)
+
 
