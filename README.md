@@ -106,9 +106,10 @@ All images are resized to a fixed resolution of **256×256** pixels to ensure co
 
 Both images and masks are converted to **grayscale**, as color channels carry no physical meaning for this task. Removing redundant color information reduces memory usage and improves training efficiency without affecting segmentation performance.
 
-The dataset is randomly split into 80% training, 10% validation, and 10% test subsets, and the filenames for each split are saved to [*`dataset/`*](dataset) as CSV files to ensure reproducibility and consistent dataset partitioning across experiments.
+The dataset is randomly split into 80/10/10 train, validation, and test sets. Filenames for each split are stored as CSV files in [*`dataset/`*](dataset) to ensure reproducibility across experiments.
 
 Dataset code: [`src/dataset.py`](src/dataset.py)
+
 
 ### Training and Evaluation
 We did not immediately train on the full dataset. Instead, we began with a small pilot subset of 20 patients to observe the model’s behavior. During this phase, we focused on tuning two main axes: the loss function and the learning rate.
