@@ -100,6 +100,8 @@ Architecture code: [`src/tumor_detector.py`](src/tumor_detector.py)
 
 ### Data Collection & Preparation
 
+Dataset: [`Brain MRI segmentation`](https://www.kaggle.com/datasets/mateuszbuda/lgg-mri-segmentation/data)
+
 We implemented a custom PyTorch dataset class, **`MRIDataset`**, to load and preprocess MRI scans along with their corresponding ground truth masks. The dataset maintains a list of paired samples in the form **[MRI scan, GT mask]**, ensuring aligned input–target loading during training.
 
 All images are resized to a fixed resolution of **256×256** pixels to ensure consistent input dimensions for the network. MRI images are resized and converted to tensors, while ground truth masks are resized using **`InterpolationMode.NEAREST`** to preserve the creation of artificial pixels during the resizing process.
