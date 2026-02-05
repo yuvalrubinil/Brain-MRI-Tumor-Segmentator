@@ -7,10 +7,10 @@ The transformer operates at the **bottleneck**, receiving a compact representati
 After inspecting many samples, we consistently observed the following patterns:
 
 - **Focal patch inside a tumor region**:  
-![Focal patch inside tumor](attention/figures/292_attention_in_tumor.png)  
+![Focal patch inside tumor](figures/292_attention_in_tumor.png)  
 
 - **Focal patch outside a tumor region**:  
-![Focal patch outside tumor](attention/figures/292_attention_out_tumor.png)  
+![Focal patch outside tumor](figures/292_attention_out_tumor.png)  
 
 ### Key Observation
 The most important conclusion is that **regardless of the focal patch location, it consistently attends to the innermost section of the tumor**, often referred to by doctors as the **"tumor core"**. 
@@ -34,7 +34,7 @@ This pattern suggests that the attention mechanism emphasizes **contrast between
 
 Another useful visualization compares the energy maps of the **tensor coming into the transformer** and the **contextualized tensor coming out**:
 
-![Transformer input vs output](attention/figures/292_transformer_input_output.png)  
+![Transformer input vs output](figures/292_transformer_input_output.png)  
 
 This helps us interpret the role of the **Values (V)** matrix:
 
@@ -45,6 +45,6 @@ This helps us interpret the role of the **Values (V)** matrix:
 These transformations effectively create a **“moat”** around the tumor, as seen in the third image above. This moat likely **establishes a clear boundary between tumor and healthy tissue**, which simplifies the job of the **upsampling CNN layers** that follow and improves segmentation performance.
 
 
-For more visual examples: [`attention/figures`](attention/figures)
+For more visual examples: [`attention/figures`](figures)
 
-Run visualization: [`attention/notebooks/attention_vis.ipynb`](attention/notebooks/attention_vis.ipynb)
+Run visualization: [`attention/notebooks/attention_vis.ipynb`](notebooks/attention_vis.ipynb)
