@@ -115,7 +115,7 @@ Dataset code: [`src/dataset.py`](src/dataset.py)
 
 ### Training and Evaluation
 We did not immediately train on the full dataset. Instead, we began with a small pilot subset of 20 patients to observe the model’s behavior. During this phase, we focused on tuning two main axes: the loss function and the learning rate.
-#### Loss Function:
+#### Loss Function
 We explored various linear combinations of Dice and BCE loss. We initially hypothesized that prioritizing the Dice component ($\mathcal{L} = 0.8 \cdot \mathcal{dice} + 0.2 \cdot \mathcal{BCE}$) would improve mask coherence. however, this setup sometimes produced blobby or over smoothed masks. Through iterative testing, we shifted the focus and gave more weight to the BCE and determined that a balanced combination:
 
 $$
@@ -124,18 +124,25 @@ $$
 
 yielded the most stable results. By balance, we achieved good overlap and good pixel confidence.
 
-#### Learning Rate:
+#### Learning Rate
 Initially, the model was trained with a fixed learning rate. To improve convergence, we then employed a **`ReduceLROnPlateau`** scheduler, which monitors the average validation Dice score and automatically reduces the learning rate when performance plateaus, enabling finer weight updates.
 
 
 ![](models/brain_tumor_model_v6/figures/training_curve.png)
 Training code: [`models/brain_tumor_model_v6/notebooks/training.ipynb`](models/brain_tumor_model_v6/notebooks/training.ipynb)
 
-### Analysis
+
 #### Computational Challenge
 Since our architecture is not a standard U-Net and includes an attention based Transformer block, training was significantly more computationally demanding.
 Initially, we used only three encoder blocks, reducing the feature map resolution to **64 × 64**. These large feature maps created a severe bottleneck at the Transformer stage, exhausting available VRAM and eventually causing system crashes.
 To address this, we added a fourth encoder block (`enc4`), reducing the feature map resolution to **32 × 32**, which fit within our VRAM constraints (see the architecture diagram for clarity).
+
+
+
+### Analysis
+
+#### Attention Mechanism
+Our analysis of the attention mechanism used in this project: [Attention to Attention](attention/attention_to_attention.md)
 
 #### Results
 We successfully trained a robust model (**`brain_tumor_model_v6`**) that achieves an average Dice score of **88%+** and **92%+** Recall. The predictions are coherent and stable across most inputs.
