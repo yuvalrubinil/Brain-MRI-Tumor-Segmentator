@@ -1,6 +1,6 @@
 ## Attention to Attention
 
-We tried to analyze the attention mechanism inside the **transformer encoder** by figuring information it captures and how it is utilized during segmentation. To do this, we visualized the **self-attention matrix**.  
+We tried to analyze the attention mechanism inside the **transformer encoder** by figuring what information it captures and how it is utilized during segmentation. To do this, we visualized the **self-attention matrix**.  
 
 The transformer operates at the **bottleneck**, receiving a compact representation consisting of a **32×32 grid of patches**. For visualization, we selected a random **focal patch** from this grid and examined its attention map. This approach provides an **interpretable, patch-centric view** of how information flows through the attention mechanism.  
 
