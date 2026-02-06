@@ -47,7 +47,7 @@ class TransformerBottleneck(nn.Module):
 
     def forward(self, x):
         B, C, H, W = x.shape
-        x = x.flatten(2).transpose(1, 2) # squashes the input into a vector to feed the transformer
+        x = x.flatten(2).transpose(1, 2) # convert the tensor into a sequence of H*W tokens, to feed the transformer
         x = x + self.pos_embed
         x = self.transformer(x)
         x = x.transpose(1, 2).view(B, C, H, W) # return to image form
